@@ -1,0 +1,69 @@
+--* coding: Shift-jis *--
+--
+--  --------------------------------------
+--  Released under the Apache 2.0 License.
+--  Yuki Meguro
+--  --------------------------------------
+--
+--  --------------------------------------
+--  Author: Yuki Meguro
+--
+--  Description:
+--      2点(xyz)間の距離を計算する関数
+--
+--  Dependancies: none
+--  --------------------------------------
+
+PROGRAM math
+%SYSTEM
+%NOLOCKGROUP
+%NOPAUSESHFT
+%NOPAUSE=ERROR+COMMAND+TPENABLE
+%COMMENT = 'v1.0'
+VAR
+    status: INTEGER
+
+    ROUTINE Expt(x: REAL; n: INTEGER): REAL
+    -- x^n
+    BEGIN
+		IF n=0 THEN
+			RETURN(1)
+		ELSE
+			RETURN(x*Expt(x, n-1))
+		ENDIF
+	END Expt
+
+    ROUTINE SQRT_VAR(src: REAL): REAL
+    BEGIN
+        IF src>0 THEN
+            RETURN(SQRT(src))
+        ELSE
+            IF src<0 THEN
+                RETURN(SQRT((-1)*src))
+            ELSE
+                IF src=0 THEN
+                    RETURN(0)
+                ENDIF
+            ENDIF
+        ENDIF
+    END SQRT_VAR
+
+    ROUTINE PtDistance(p1: XYZWPR; p2: XYZWPR): REAL
+    BEGIN
+        RETURN(SQRT_VAR(Expt((p1.x-p2.x),2)+Expt((p1.y-p2.y),2)+Expt((p1.z-p2.z),2)))
+    END PtDistance
+
+    ROUTINE Example
+    VAR
+        posn: ARRAY[2] OF XYZWPR
+    BEGIN
+            -- 以下の例では位置ﾚｼﾞ[6]・位置ﾚｼﾞ[7]2点間の距離を計算し、
+            -- ﾚｼﾞ[1]に出力しています
+            posn[1]=GET_POS_REG(6, status)
+            posn[2]=GET_POS_REG(7, status)
+            SET_REAL_REG(1, PtDistance(posn[1], posn[2]), status)
+    END Example
+
+BEGIN
+    Example
+END math
